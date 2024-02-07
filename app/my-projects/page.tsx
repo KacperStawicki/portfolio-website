@@ -49,7 +49,7 @@ export default function MyProjects() {
   };
 
   return (
-    <main className="flex flex-col min-h-screen pt-12 lg:pt-24 text-neutral-800">
+    <main className="flex flex-col min-h-screen pt-12 lg:pt-24 text-neutral-800 overflow-hidden">
       <section
         className={`px-4 transition-all duration-500 ${
           pageLoad ? "-translate-y-4 opacity-0" : ""
