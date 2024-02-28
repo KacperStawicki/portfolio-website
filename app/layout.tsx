@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/navbar";
 
-const roboto = Roboto({
+const roboto = Nunito({
   subsets: ["latin"],
-  weight: ["100", "300", "400", "500", "700", "900"],
+  weight: ["300", "400", "500", "700", "900"],
 });
 
 export const metadata: Metadata = {
@@ -20,10 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`bg-neutral-200 text-neutral-900 ${roboto.className}`}>
-        <Navbar />
-        {children}
-      </body>
+      <body className={roboto.className}>{children}</body>
     </html>
   );
 }

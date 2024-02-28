@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  scroll-behavior: smooth;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -1,39 +1,85 @@
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 
 interface Props {
   title: string;
   description: string;
+  tech: string[];
   imageSrc: string;
+  flip?: boolean;
   link: string;
 }
 
-export default function Project({ title, description, imageSrc, link }: Props) {
+export default function Project({
+  title,
+  description,
+  tech,
+  imageSrc,
+  flip,
+  link,
+}: Props) {
   return (
-    <div className="max-w-4xl mx-auto my-8 lg:min-w-[768px] xl:min-w-[1024px] 2xl:min-w-[1280px]">
-      <div className="flex flex-col items-center text-center rounded-xl bg-white shadow-md overflow-hidden">
-        <div className="p-5">
-          <h2 className="text-3xl lg:text-5xl font-medium tracking-tight text-neutral-800 md:text-4xl">
-            {title}
-          </h2>
-          <p className="mt-2 text-lg lg:text-2xl text-neutral-600 font-light">
-            {description}
-          </p>
-        </div>
-        <div className="p-4 lg:p-8 pt-0 w-full block">
-          <Link href={link} passHref className="block w-full">
-            <div className="relative h-64 md:h-96 lg:h-[448px] 2xl:h-[576px] transition-all">
-              <Image
-                src={imageSrc}
-                alt={title}
-                layout="fill"
-                className="transition-transform duration-500 object-fill hover:scale-105 lg:hover:scale-100 rounded-xl shadow-md border-2 border-neutral-500"
-              />
-            </div>
-          </Link>
+    <Link
+      href={link}
+      className="flex flex-col lg:flex-row lg:justify-center lg:items-center mx-auto xl:gap-32 transition-all hover:scale-105 max-w-[100vw]"
+    >
+      <div className="lg:hidden text-center mb-8 px-6">
+        <div className="flex flex-col">
+          <span className="text-4xl">{title}</span>
+          <span>{description}</span>
         </div>
       </div>
-    </div>
+      {!flip && (
+        <div className="px-4 lg:px-0">
+          <div className="hidden lg:flex justify-around lg:space-x-16 px-4 lg:justify-normal">
+            {tech.map((name, index) => (
+              <div key={index}>{name}</div>
+            ))}
+          </div>
+
+          <div className="relative w-full h-48 lg:w-[44rem] lg:h-96 bg-neutral-100 rounded-xl shadow-md">
+            <Image
+              src={imageSrc}
+              alt={title}
+              fill
+              className="rounded-3xl p-4"
+            />
+          </div>
+          <div className="flex justify-around lg:space-x-16 px-4 lg:justify-normal lg:hidden mt-2">
+            {tech.map((name, index) => (
+              <div key={index}>{name}</div>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="lg:flex items-center justify-center flex-1 h-full text-center py-16 lg:max-w-md mx-auto hidden">
+        <div className="flex flex-col">
+          <span className="text-4xl">{title}</span>
+          <span>{description}</span>
+        </div>
+      </div>
+      {flip && (
+        <div className="px-4 lg:px-0">
+          <div className="hidden lg:flex justify-around lg:space-x-16 px-4 lg:justify-end">
+            {tech.map((name, index) => (
+              <div key={index}>{name}</div>
+            ))}
+          </div>
+          <div className="relative w-full h-48 lg:w-[44rem] lg:h-96 bg-neutral-100 rounded-xl shadow-md">
+            <Image
+              src={imageSrc}
+              alt={title}
+              fill
+              className="rounded-3xl p-4"
+            />
+          </div>
+          <div className="flex justify-around lg:space-x-16 px-4 lg:justify-normal lg:hidden mt-2">
+            {tech.map((name, index) => (
+              <div key={index}>{name}</div>
+            ))}
+          </div>
+        </div>
+      )}
+    </Link>
   );
 }
