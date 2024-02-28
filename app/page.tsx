@@ -16,8 +16,8 @@ export default function Home() {
       <div className="bg-[url('/hero_background.jpg')] bg-bottom">
         <section className="px-4 py-16 lg:px-8 lg:py-32 text-center">
           <div className="flex flex-col items-center">
-            <span className="text-5xl lg:text-8xl">Kacper Stawicki</span>
-            <span className="lg:text-4xl">Front-End Developer</span>
+            <span className="text-7xl lg:text-8xl">Kacper Stawicki</span>
+            <span className="text-2xl lg:text-4xl">Front-End Developer</span>
             <div className="gap-8 flex justify-center mt-4">
               <Link
                 href="https://www.linkedin.com/in/kacper-stawicki-0541512a9"
