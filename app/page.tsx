@@ -52,33 +52,6 @@ export default function Home() {
           </div>
         </section>
       </div>
-      <section className="flex lg:flex-1 py-16 mx-auto">
-        <div className="flex flex-col lg:flex-1 space-y-32">
-          <Project
-            title="Portfolio"
-            description="The website you are currently on. A simplistic portfolio to learn more about me & contact me to collaborate."
-            imageSrc="/portfolio.jpg"
-            tech={["Next.js", "TypeScript", "TailwindCSS"]}
-            link="https://github.com/Renjirox/portfolio-website"
-          />
-
-          <Project
-            title="Dashboard"
-            description="A barebone website used for managing a business. Written with Next.js, more functions incoming soon."
-            imageSrc="/dashboard.jpg"
-            tech={["Next.js", "TypeScript", "TailwindCSS"]}
-            link="https://github.com/Renjirox/dashboard"
-            flip
-          />
-          <Project
-            title="Syndicate of Souls"
-            description="A website for an upcoming indie MOBA game Syndicate of Souls. Currently written in Next.js, ongoing conversion to Angular."
-            imageSrc="/sos.jpg"
-            tech={["Next.js", "TypeScript", "TailwindCSS"]}
-            link="https://www.syndicateofsouls.com"
-          />
-        </div>
-      </section>
     </main>
   );
 }
