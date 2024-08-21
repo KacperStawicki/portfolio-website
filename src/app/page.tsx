@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ASCIIArt,
   CRTContainer,
@@ -12,6 +12,8 @@ import {
   Timeline,
   TimelineDate,
   TypingCursor,
+  MobileKeyboardButton,
+  MobileKeyboard,
 } from "@/components";
 import {
   availableCommands,
@@ -23,57 +25,57 @@ import { Typewriter } from "react-simple-typewriter";
 import { OutputLine } from "@/types";
 import { hslToRgb } from "@/utils";
 import { useScanlinesEffect } from "@/scanlines";
+import { Keyboard, KeyboardOff } from "lucide-react";
 
 export default function Terminal() {
   const [command, setCommand] = useState<string>("");
   const [output, setOutput] = useState<OutputLine[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [themeColor, setThemeColor] = useState<string>("255, 184, 0"); // Default to Amber (in RGB)
-  const [hue, setHue] = useState<number>(40); // Starting hue value corresponding to Amber
+  const [themeColor, setThemeColor] = useState<string>("255, 184, 0");
+  const [hue, setHue] = useState<number>(40);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
-  const [glowIntensity, setGlowIntensity] = useState<number>(1); // Default glow intensity
+  const [glowIntensity, setGlowIntensity] = useState<number>(1);
   const [adjustingGlow, setAdjustingGlow] = useState<boolean>(false);
   const [adjustingTheme, setAdjustingTheme] = useState<boolean>(false);
+  const [showMobileKeyboard, setShowMobileKeyboard] = useState<boolean>(false);
   const crtCanvasRef = useRef<HTMLCanvasElement>(null);
   const endOfOutputRef = useRef<HTMLDivElement>(null);
 
   useScanlinesEffect(crtCanvasRef, themeColor);
 
-  /////////////////////////////////////////////////////////////////////////////////////////////// TYPING FUNCTION
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (loading) return; // Prevent typing when loading
+      if (loading) return;
 
       const { key } = e;
 
       if (adjustingGlow) {
         if (key === "ArrowRight") {
-          setGlowIntensity((prev) => Math.min(prev + 0.1, 1)); // Increase glow, max 1
+          setGlowIntensity((prev) => Math.min(prev + 0.1, 1));
         } else if (key === "ArrowLeft") {
-          setGlowIntensity((prev) => Math.max(prev - 0.1, 0)); // Decrease glow, min 0
+          setGlowIntensity((prev) => Math.max(prev - 0.1, 0));
         } else if (key === "Escape") {
-          setAdjustingGlow(false); // Exit glow adjustment mode
+          setAdjustingGlow(false);
         }
       } else if (adjustingTheme) {
         if (key === "ArrowRight") {
-          setHue((prev) => (prev + 10) % 360); // Increase hue and wrap around at 360
+          setHue((prev) => (prev + 10) % 360);
           const [r, g, b] = hslToRgb((hue + 10) % 360, 100, 50);
-          setThemeColor(`${r}, ${g}, ${b}`); // Live update theme color in RGB format
+          setThemeColor(`${r}, ${g}, ${b}`);
         } else if (key === "ArrowLeft") {
-          setHue((prev) => (prev - 10 + 360) % 360); // Decrease hue and wrap around at 0
+          setHue((prev) => (prev - 10 + 360) % 360);
           const [r, g, b] = hslToRgb((hue - 10 + 360) % 360, 100, 50);
-          setThemeColor(`${r}, ${g}, ${b}`); // Live update theme color in RGB format
+          setThemeColor(`${r}, ${g}, ${b}`);
         } else if (key === "Escape") {
-          setAdjustingTheme(false); // Exit theme adjustment mode
+          setAdjustingTheme(false);
         }
       } else {
         if (key === "Enter") {
           handleCommand(command.trim().toLowerCase());
           setCommandHistory((prev) => [...prev, command.trim().toLowerCase()]);
-          setHistoryIndex(-1); // Reset the history index after each command
+          setHistoryIndex(-1);
           setCommand("");
           setSuggestions([]);
         } else if (key === "Backspace") {
@@ -84,7 +86,6 @@ export default function Terminal() {
             setHistoryIndex(newIndex);
             setCommand(commandHistory[newIndex]);
           } else if (historyIndex === -1 && commandHistory.length > 0) {
-            // Start navigating through history
             setHistoryIndex(commandHistory.length - 1);
             setCommand(commandHistory[commandHistory.length - 1]);
           }
@@ -94,16 +95,15 @@ export default function Terminal() {
             setHistoryIndex(newIndex);
             setCommand(commandHistory[newIndex]);
           } else if (historyIndex === commandHistory.length - 1) {
-            // If at the end of history, reset to empty command
             setHistoryIndex(-1);
             setCommand("");
           }
         } else if (key.length === 1) {
           updateCommand(command + key);
         } else if (key === "Tab") {
-          e.preventDefault(); // Prevent default tab behavior
+          e.preventDefault();
           if (suggestions.length > 0) {
-            setCommand(suggestions[0]); // Auto-complete with the first suggestion
+            setCommand(suggestions[0]);
             setSuggestions([]);
           }
         }
@@ -115,7 +115,6 @@ export default function Terminal() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     command,
     suggestions,
@@ -136,10 +135,7 @@ export default function Terminal() {
     );
   };
 
-  /////////////////////////////////////////////////////////////////////////////////////////////// COMMANDS & SCROLLING
-
   useEffect(() => {
-    // Scroll to the bottom whenever the output or command changes
     if (endOfOutputRef.current) {
       endOfOutputRef.current.scrollIntoView({ behavior: "smooth" });
     }
@@ -167,7 +163,6 @@ export default function Terminal() {
         },
       ]);
     } else if (cmd === "history") {
-      // Handle the history command
       setOutput((prev) => [
         ...prev,
         {
@@ -246,10 +241,8 @@ export default function Terminal() {
         { commandText: `> ${command}`, responseText },
       ]);
     }, 1500);
-    return ""; // Return empty string to prevent immediate output
+    return "";
   };
-
-  /////////////////////////////////////////////////////////////////////////////////////////////// MAIN RETURN
 
   return (
     <CRTScreen $themeColor={themeColor} $glowIntensity={glowIntensity}>
@@ -288,19 +281,17 @@ export default function Terminal() {
                   />
                 </p>
               ) : (
-                line.responseText // Directly render JSX
+                line.responseText
               )}
             </div>
           ))}
           {loading && (
-            <>
-              <LoadingIndicator
-                $themeColor={themeColor}
-                $glowIntensity={glowIntensity}
-              >
-                Thinking...
-              </LoadingIndicator>
-            </>
+            <LoadingIndicator
+              $themeColor={themeColor}
+              $glowIntensity={glowIntensity}
+            >
+              Thinking...
+            </LoadingIndicator>
           )}
           {!loading && !adjustingGlow && !adjustingTheme && (
             <p>
@@ -354,7 +345,34 @@ export default function Terminal() {
               ))}
             </Suggestions>
           )}
-          <div ref={endOfOutputRef} /> {/* Dummy element to scroll to */}
+          <MobileKeyboardButton
+            $themeColor={themeColor}
+            $glowIntensity={glowIntensity}
+            onClick={() => setShowMobileKeyboard(!showMobileKeyboard)}
+          >
+            {showMobileKeyboard ? <KeyboardOff /> : <Keyboard />}
+          </MobileKeyboardButton>
+          {showMobileKeyboard && (
+            <MobileKeyboard
+              $themeColor={themeColor}
+              $glowIntensity={glowIntensity}
+              value={command}
+              onChange={(e) => setCommand(e.target.value)} // Handle typing
+              onKeyDown={(e) => {
+                const { key } = e;
+                if (key === "Enter") {
+                  e.preventDefault();
+                  handleCommand(command);
+                  setCommand("");
+                  setShowMobileKeyboard(false);
+                } else if (key === "Backspace") {
+                  e.preventDefault();
+                  setCommand((prev) => prev.slice(0, -1));
+                }
+              }}
+            />
+          )}
+          <div ref={endOfOutputRef} />
         </CRTContent>
       </CRTContainer>
       <CRTEffectCanvas ref={crtCanvasRef} />
