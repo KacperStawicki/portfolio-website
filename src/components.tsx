@@ -216,16 +216,6 @@ export const CRTEffectCanvas = styled.canvas`
   height: 100%;
   pointer-events: none;
   z-index: 2;
-
-  @media (max-width: 768px) {
-    width: 90%;
-    height: 90%;
-  }
-
-  @media (max-width: 480px) {
-    width: 80%;
-    height: 80%;
-  }
 `;
 
 export const MobileKeyboardButton = styled.button<ThemeProps>`

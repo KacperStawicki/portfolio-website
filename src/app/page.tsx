@@ -47,7 +47,8 @@ export default function Terminal() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (loading) return;
+      // Ignore key events if mobile keyboard is active
+      if (loading || showMobileKeyboard) return;
 
       const { key } = e;
 
@@ -124,6 +125,7 @@ export default function Terminal() {
     adjustingGlow,
     adjustingTheme,
     hue,
+    showMobileKeyboard, // Include in dependency array
   ]);
 
   const updateCommand = (newCommand: string) => {
@@ -261,7 +263,7 @@ export default function Terminal() {
           <p>
             <Typewriter
               words={[
-                'Type "help" for a list of commands. Use "Tab" to autocomplete commands. For best experience use Firefox.',
+                'Type "help" for a list of commands. Use "Tab" to autocomplete commands. For best experience use Desktop Firefox.',
               ]}
               loop={1}
               typeSpeed={10}
@@ -357,17 +359,21 @@ export default function Terminal() {
               $themeColor={themeColor}
               $glowIntensity={glowIntensity}
               value={command}
-              onChange={(e) => setCommand(e.target.value)} // Handle typing
+              onChange={(e) => setCommand(e.target.value)}
               onKeyDown={(e) => {
                 const { key } = e;
                 if (key === "Enter") {
-                  e.preventDefault();
-                  handleCommand(command);
+                  handleCommand(command.trim().toLowerCase());
+                  setCommandHistory((prev) => [
+                    ...prev,
+                    command.trim().toLowerCase(),
+                  ]);
+                  setHistoryIndex(-1);
                   setCommand("");
-                  setShowMobileKeyboard(false);
-                } else if (key === "Backspace") {
-                  e.preventDefault();
-                  setCommand((prev) => prev.slice(0, -1));
+                  setSuggestions([]);
+                  setTimeout(() => {
+                    setShowMobileKeyboard(false);
+                  }, 100);
                 }
               }}
             />
