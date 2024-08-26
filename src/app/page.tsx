@@ -15,19 +15,21 @@ import {
   MobileKeyboardButton,
   MobileKeyboard,
 } from "@/components";
-import {
-  availableCommands,
-  jokes,
-  motivations,
-  timelineEvents,
-} from "@/constants";
 import { Typewriter } from "react-simple-typewriter";
 import { OutputLine } from "@/types";
 import { hslToRgb } from "@/utils";
 import { useScanlinesEffect } from "@/scanlines";
 import { Keyboard, KeyboardOff } from "lucide-react";
+import {
+  AVAILABLE_COMMANDS,
+  COMMAND_RESPONSES,
+  JOKES,
+  MOTIVATIONS,
+  TIMELINE_EVENTS,
+} from "@/constants";
 
 export default function Terminal() {
+  // State variables to manage command, output, theme color, etc.
   const [command, setCommand] = useState<string>("");
   const [output, setOutput] = useState<OutputLine[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,18 +42,23 @@ export default function Terminal() {
   const [adjustingGlow, setAdjustingGlow] = useState<boolean>(false);
   const [adjustingTheme, setAdjustingTheme] = useState<boolean>(false);
   const [showMobileKeyboard, setShowMobileKeyboard] = useState<boolean>(false);
+  const [enableFlicker, setEnableFlicker] = useState<boolean>(false);
+
+  // Refs to store references to DOM elements
   const crtCanvasRef = useRef<HTMLCanvasElement>(null);
   const endOfOutputRef = useRef<HTMLDivElement>(null);
 
+  // Apply scanlines effect to the CRT canvas
   useScanlinesEffect(crtCanvasRef, themeColor);
 
+  // Effect to handle keyboard events
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore key events if mobile keyboard is active
       if (loading || showMobileKeyboard) return;
 
       const { key } = e;
 
+      // Handle glow adjustment mode
       if (adjustingGlow) {
         if (key === "ArrowRight") {
           setGlowIntensity((prev) => Math.min(prev + 0.1, 1));
@@ -60,6 +67,7 @@ export default function Terminal() {
         } else if (key === "Escape") {
           setAdjustingGlow(false);
         }
+        // Handle theme adjustment mode
       } else if (adjustingTheme) {
         if (key === "ArrowRight") {
           setHue((prev) => (prev + 10) % 360);
@@ -73,6 +81,7 @@ export default function Terminal() {
           setAdjustingTheme(false);
         }
       } else {
+        // Handle general key presses
         if (key === "Enter") {
           handleCommand(command.trim().toLowerCase());
           setCommandHistory((prev) => [...prev, command.trim().toLowerCase()]);
@@ -82,6 +91,7 @@ export default function Terminal() {
         } else if (key === "Backspace") {
           updateCommand(command.slice(0, -1));
         } else if (key === "ArrowUp") {
+          // Navigate command history with ArrowUp
           if (historyIndex > 0) {
             const newIndex = historyIndex - 1;
             setHistoryIndex(newIndex);
@@ -91,6 +101,7 @@ export default function Terminal() {
             setCommand(commandHistory[commandHistory.length - 1]);
           }
         } else if (key === "ArrowDown") {
+          // Navigate command history with ArrowDown
           if (historyIndex >= 0 && historyIndex < commandHistory.length - 1) {
             const newIndex = historyIndex + 1;
             setHistoryIndex(newIndex);
@@ -100,6 +111,7 @@ export default function Terminal() {
             setCommand("");
           }
         } else if (key.length === 1) {
+          // Handle character input
           updateCommand(command + key);
         } else if (key === "Tab") {
           e.preventDefault();
@@ -111,9 +123,11 @@ export default function Terminal() {
       }
     };
 
+    // Add event listener for keydown events
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      // Cleanup event listener on component unmount
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [
@@ -125,24 +139,27 @@ export default function Terminal() {
     adjustingGlow,
     adjustingTheme,
     hue,
-    showMobileKeyboard, // Include in dependency array
+    showMobileKeyboard,
   ]);
 
+  // Function to update the command state and suggestions
   const updateCommand = (newCommand: string) => {
     setCommand(newCommand);
     setSuggestions(
-      availableCommands.filter((cmd) =>
+      AVAILABLE_COMMANDS.filter((cmd) =>
         cmd.startsWith(newCommand.toLowerCase())
       )
     );
   };
 
+  // Scroll to the end of output when the output or command changes
   useEffect(() => {
     if (endOfOutputRef.current) {
       endOfOutputRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [output, command]);
 
+  // Function to handle command execution
   const handleCommand = (cmd: string) => {
     if (cmd === "glow") {
       setAdjustingGlow(true);
@@ -178,6 +195,17 @@ export default function Terminal() {
           ),
         },
       ]);
+    } else if (cmd === "flicker") {
+      setEnableFlicker(!enableFlicker);
+      setOutput((prev) => [
+        ...prev,
+        {
+          commandText: `> ${cmd}`,
+          responseText: enableFlicker
+            ? "Disabled CRT flickering effect."
+            : "Enabled CRT flickering effect.",
+        },
+      ]);
     } else {
       const responseText = getCommandResponse(cmd);
       if (responseText) {
@@ -189,29 +217,30 @@ export default function Terminal() {
     }
   };
 
+  // Function to get the response for a specific command
   const getCommandResponse = (cmd: string): string | React.ReactNode => {
     switch (cmd) {
       case "help":
-        return 'Available commands: "help", "about", "contact", "clear", "joke", "motivate", "theme", "timeline", "glow", "history"';
+        return COMMAND_RESPONSES.help;
       case "about":
-        return "I'm a frontend developer, diggin' tech with a couple of years under my belt. I'm really into clean, modern UIs, but I'm always up for some experimentation like with this far-out portfolio. I'm self-taught and currently grooving with Next.js & TypeScript and other cool libraries. Wanna know more? Hit me up!";
+        return COMMAND_RESPONSES.about;
       case "contact":
-        return "You can reach me at stawicki.k02@gmail.com or groove with me on LinkedIn: www.linkedin.com/in/kacper-stawicki-0541512a9";
+        return COMMAND_RESPONSES.contact;
       case "clear":
         setOutput([]);
         return "";
       case "joke":
         return handleAsyncResponse(
-          () => jokes[Math.floor(Math.random() * jokes.length)]
+          () => JOKES[Math.floor(Math.random() * JOKES.length)]
         );
       case "motivate":
         return handleAsyncResponse(
-          () => motivations[Math.floor(Math.random() * motivations.length)]
+          () => MOTIVATIONS[Math.floor(Math.random() * MOTIVATIONS.length)]
         );
       case "timeline":
         return (
           <Timeline>
-            {timelineEvents.map((event, index) => (
+            {TIMELINE_EVENTS.map((event, index) => (
               <li key={index}>
                 <TimelineDate>{event.year}</TimelineDate>:{" "}
                 <Typewriter
@@ -227,12 +256,13 @@ export default function Terminal() {
       case "history":
         return commandHistory.join("\n");
       case "easteregg":
-        return "Far out! You found the Easter Egg! Here's a secret: The best way to predict the future is to invent it, dig?";
+        return COMMAND_RESPONSES.easteregg;
       default:
-        return `Command not found: ${cmd}`;
+        return COMMAND_RESPONSES.default(cmd);
     }
   };
 
+  // Function to handle asynchronous command responses like jokes and motivations
   const handleAsyncResponse = (getResponse: () => string) => {
     setLoading(true);
     setTimeout(() => {
@@ -246,11 +276,25 @@ export default function Terminal() {
     return "";
   };
 
+  // Render the terminal UI
   return (
-    <CRTScreen $themeColor={themeColor} $glowIntensity={glowIntensity}>
-      <CRTContainer $themeColor={themeColor} $glowIntensity={glowIntensity}>
+    <CRTScreen
+      $themeColor={themeColor}
+      $glowIntensity={glowIntensity}
+      $enableFlicker={enableFlicker}
+    >
+      <CRTContainer
+        $themeColor={themeColor}
+        $glowIntensity={glowIntensity}
+        $enableFlicker={enableFlicker}
+      >
         <CRTContent>
-          <ASCIIArt $themeColor={themeColor} $glowIntensity={glowIntensity}>
+          {/* ASCII art and initial command hints */}
+          <ASCIIArt
+            $themeColor={themeColor}
+            $glowIntensity={glowIntensity}
+            $enableFlicker={enableFlicker}
+          >
             {`
             _ _         _____ _                     _ 
   /\\  /\\___| | | ___   /__   \\ |__   ___ _ __ ___  / \\
@@ -260,16 +304,34 @@ export default function Terminal() {
                                                       
 `}
           </ASCIIArt>
-          <p>
+          <p className="flex flex-col">
             <Typewriter
-              words={[
-                'Type "help" for a list of commands. Use "Tab" to autocomplete commands. For best experience use Desktop Firefox.',
-              ]}
+              words={[`"help" - All commands`]}
               loop={1}
               typeSpeed={10}
-              deleteSpeed={50}
+              deleteSpeed={10}
+            />
+            <Typewriter
+              words={[`"Tab" - Autocomplete commands`]}
+              loop={1}
+              typeSpeed={10}
+              deleteSpeed={10}
+            />
+            <Typewriter
+              words={[`"Up/Down" - Scroll through command history`]}
+              loop={1}
+              typeSpeed={10}
+              deleteSpeed={10}
+            />
+            <Typewriter
+              words={[`For the best experience, use Desktop Firefox.`]}
+              loop={1}
+              typeSpeed={10}
+              deleteSpeed={10}
             />
           </p>
+
+          {/* Render output lines */}
           {output.map((line, index) => (
             <div key={index}>
               <p>{line.commandText}</p>
@@ -287,23 +349,31 @@ export default function Terminal() {
               )}
             </div>
           ))}
+
+          {/* Loading indicator */}
           {loading && (
             <LoadingIndicator
               $themeColor={themeColor}
               $glowIntensity={glowIntensity}
+              $enableFlicker={enableFlicker}
             >
               Thinking...
             </LoadingIndicator>
           )}
+
+          {/* Render command input with typing cursor */}
           {!loading && !adjustingGlow && !adjustingTheme && (
             <p>
               {"> "} {command}
               <TypingCursor
                 $themeColor={themeColor}
                 $glowIntensity={glowIntensity}
+                $enableFlicker={enableFlicker}
               />
             </p>
           )}
+
+          {/* Render glow adjustment UI */}
           {!loading && adjustingGlow && (
             <p>
               Glow Intensity:
@@ -313,9 +383,12 @@ export default function Terminal() {
               <TypingCursor
                 $themeColor={themeColor}
                 $glowIntensity={glowIntensity}
+                $enableFlicker={enableFlicker}
               />
             </p>
           )}
+
+          {/* Render theme color adjustment UI */}
           {!loading && adjustingTheme && (
             <p>
               Theme Color:
@@ -334,30 +407,40 @@ export default function Terminal() {
               <TypingCursor
                 $themeColor={`hsl(${hue}, 100%, 50%)`}
                 $glowIntensity={glowIntensity}
+                $enableFlicker={enableFlicker}
               />
             </p>
           )}
+
+          {/* Render command suggestions */}
           {suggestions.length > 0 && !loading && (
             <Suggestions
               $themeColor={themeColor}
               $glowIntensity={glowIntensity}
+              $enableFlicker={enableFlicker}
             >
               {suggestions.map((suggestion, index) => (
                 <li key={index}>{suggestion}</li>
               ))}
             </Suggestions>
           )}
+
+          {/* Render mobile keyboard button */}
           <MobileKeyboardButton
             $themeColor={themeColor}
             $glowIntensity={glowIntensity}
+            $enableFlicker={enableFlicker}
             onClick={() => setShowMobileKeyboard(!showMobileKeyboard)}
           >
             {showMobileKeyboard ? <KeyboardOff /> : <Keyboard />}
           </MobileKeyboardButton>
+
+          {/* Render mobile keyboard input */}
           {showMobileKeyboard && (
             <MobileKeyboard
               $themeColor={themeColor}
               $glowIntensity={glowIntensity}
+              $enableFlicker={enableFlicker}
               value={command}
               onChange={(e) => setCommand(e.target.value)}
               onKeyDown={(e) => {
@@ -378,9 +461,13 @@ export default function Terminal() {
               }}
             />
           )}
+
+          {/* Placeholder to scroll to the bottom of the output */}
           <div ref={endOfOutputRef} />
         </CRTContent>
       </CRTContainer>
+
+      {/* CRT effect canvas */}
       <CRTEffectCanvas ref={crtCanvasRef} />
     </CRTScreen>
   );

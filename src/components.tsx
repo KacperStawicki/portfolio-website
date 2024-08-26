@@ -2,42 +2,67 @@ import { ThemeProps } from "@/types";
 import styled, { keyframes } from "styled-components";
 
 export const crtEffect = (
-  $themeColor: string,
-  $glowIntensity: number
+  themeColor: string,
+  glowIntensity: number,
+  enableFlicker: boolean
 ) => keyframes`
+  ${
+    enableFlicker
+      ? `
   0%, 100% {
-    text-shadow: 0 0 ${2 * $glowIntensity}px rgba(${$themeColor}, ${
-  0.5 * $glowIntensity
-}),
-                 0 0 ${4 * $glowIntensity}px rgba(${$themeColor}, ${
-  0.5 * $glowIntensity
-}),
-                 0 0 ${8 * $glowIntensity}px rgba(${$themeColor}, ${
-  0.5 * $glowIntensity
-}),
-                 0 0 ${12 * $glowIntensity}px rgba(${
-  $themeColor === "255, 184, 0" ? "255, 0, 0" : "0, 255, 0"
-}, ${0.5 * $glowIntensity}),
-                 0 0 ${16 * $glowIntensity}px rgba(${
-  $themeColor === "255, 184, 0" ? "255, 0, 0" : "0, 255, 0"
-}, ${0.5 * $glowIntensity});
+    text-shadow: 0 0 ${2 * glowIntensity}px rgba(${themeColor}, ${
+          0.5 * glowIntensity
+        }),
+                 0 0 ${4 * glowIntensity}px rgba(${themeColor}, ${
+          0.5 * glowIntensity
+        }),
+                 0 0 ${8 * glowIntensity}px rgba(${themeColor}, ${
+          0.5 * glowIntensity
+        }),
+                 0 0 ${12 * glowIntensity}px rgba(${
+          themeColor === "255, 184, 0" ? "255, 0, 0" : "0, 255, 0"
+        }, ${0.5 * glowIntensity}),
+                 0 0 ${16 * glowIntensity}px rgba(${
+          themeColor === "255, 184, 0" ? "255, 0, 0" : "0, 255, 0"
+        }, ${0.5 * glowIntensity});
   }
   50% {
-    text-shadow: 0 0 ${1 * $glowIntensity}px rgba(${$themeColor}, ${
-  0.5 * $glowIntensity
-}),
-                 0 0 ${2 * $glowIntensity}px rgba(${$themeColor}, ${
-  0.5 * $glowIntensity
-}),
-                 0 0 ${3 * $glowIntensity}px rgba(${$themeColor}, ${
-  0.5 * $glowIntensity
-}),
-                 0 0 ${4 * $glowIntensity}px rgba(${$themeColor}, ${
-  0.5 * $glowIntensity
-}),
-                 0 0 ${5 * $glowIntensity}px rgba(${$themeColor}, ${
-  0.5 * $glowIntensity
-});
+    text-shadow: 0 0 ${1 * glowIntensity}px rgba(${themeColor}, ${
+          0.5 * glowIntensity
+        }),
+                 0 0 ${2 * glowIntensity}px rgba(${themeColor}, ${
+          0.5 * glowIntensity
+        }),
+                 0 0 ${3 * glowIntensity}px rgba(${themeColor}, ${
+          0.5 * glowIntensity
+        }),
+                 0 0 ${4 * glowIntensity}px rgba(${themeColor}, ${
+          0.5 * glowIntensity
+        }),
+                 0 0 ${5 * glowIntensity}px rgba(${themeColor}, ${
+          0.5 * glowIntensity
+        });
+  }
+  `
+      : `
+    0%, 100% {
+    text-shadow: 0 0 ${2 * glowIntensity}px rgba(${themeColor}, ${
+          0.5 * glowIntensity
+        }),
+                 0 0 ${4 * glowIntensity}px rgba(${themeColor}, ${
+          0.5 * glowIntensity
+        }),
+                 0 0 ${8 * glowIntensity}px rgba(${themeColor}, ${
+          0.5 * glowIntensity
+        }),
+                 0 0 ${12 * glowIntensity}px rgba(${
+          themeColor === "255, 184, 0" ? "255, 0, 0" : "0, 255, 0"
+        }, ${0.5 * glowIntensity}),
+                 0 0 ${16 * glowIntensity}px rgba(${
+          themeColor === "255, 184, 0" ? "255, 0, 0" : "0, 255, 0"
+        }, ${0.5 * glowIntensity});
+  }
+  `
   }
 `;
 
@@ -54,8 +79,9 @@ export const CRTScreen = styled.div<ThemeProps>`
   padding: 20px;
   overflow-x: hidden;
   overflow-y: scroll;
-  animation: ${(props) => crtEffect(props.$themeColor, props.$glowIntensity)}
-    0.01s infinite;
+  animation: ${(props) =>
+      crtEffect(props.$themeColor, props.$glowIntensity, props.$enableFlicker)}
+    0.08s infinite;
   position: relative;
   filter: blur(0.5px); /* Apply slight blur to the overall image */
 
@@ -79,8 +105,9 @@ export const CRTContainer = styled.div<ThemeProps>`
   z-index: 1;
   overflow-x: hidden;
   overflow-y: scroll;
-  animation: ${(props) => crtEffect(props.$themeColor, props.$glowIntensity)}
-    0.01s infinite;
+  animation: ${(props) =>
+      crtEffect(props.$themeColor, props.$glowIntensity, props.$enableFlicker)}
+    0.08s infinite;
 
   @media (max-width: 768px) {
     padding: 0px 10px;
@@ -116,8 +143,9 @@ export const TypingCursor = styled.span<ThemeProps>`
   background: ${(props) => `rgb(${props.$themeColor})`};
   margin-left: 2px;
   vertical-align: middle;
-  animation: ${(props) => crtEffect(props.$themeColor, props.$glowIntensity)}
-    0.01s infinite;
+  animation: ${(props) =>
+      crtEffect(props.$themeColor, props.$glowIntensity, props.$enableFlicker)}
+    0.08s infinite;
 
   @media (max-width: 768px) {
     width: 8px;
@@ -135,8 +163,9 @@ export const ASCIIArt = styled.pre<ThemeProps>`
   font-size: 1.5rem;
   line-height: 1;
   margin: 0;
-  animation: ${(props) => crtEffect(props.$themeColor, props.$glowIntensity)}
-    0.01s infinite;
+  animation: ${(props) =>
+      crtEffect(props.$themeColor, props.$glowIntensity, props.$enableFlicker)}
+    0.08s infinite;
 
   @media (max-width: 768px) {
     font-size: 0.8rem;
@@ -148,8 +177,9 @@ export const ASCIIArt = styled.pre<ThemeProps>`
 `;
 
 export const LoadingIndicator = styled.div<ThemeProps>`
-  animation: ${(props) => crtEffect(props.$themeColor, props.$glowIntensity)}
-    0.01s infinite;
+  animation: ${(props) =>
+      crtEffect(props.$themeColor, props.$glowIntensity, props.$enableFlicker)}
+    0.08s infinite;
 
   @media (max-width: 768px) {
     width: 80%;
@@ -167,8 +197,9 @@ export const Suggestions = styled.ul<ThemeProps>`
   color: ${(props) => `rgb(${props.$themeColor})`};
   background-color: rgba(0, 0, 0, 0.5);
   border: 1px solid ${(props) => `rgb(${props.$themeColor})`};
-  animation: ${(props) => crtEffect(props.$themeColor, props.$glowIntensity)}
-    0.01s infinite;
+  animation: ${(props) =>
+      crtEffect(props.$themeColor, props.$glowIntensity, props.$enableFlicker)}
+    0.08s infinite;
 
   & li:not(:first-child) {
     margin-top: 15px;
@@ -228,8 +259,9 @@ export const MobileKeyboardButton = styled.button<ThemeProps>`
   border: 2px solid ${(props) => `rgb(${props.$themeColor})`};
   padding: 10px;
   z-index: 100;
-  animation: ${(props) => crtEffect(props.$themeColor, props.$glowIntensity)}
-    0.01s infinite;
+  animation: ${(props) =>
+      crtEffect(props.$themeColor, props.$glowIntensity, props.$enableFlicker)}
+    0.08s infinite;
   text-shadow: 0 0 ${(props) => 2 * props.$glowIntensity}px
       rgba(
         ${(props) => props.$themeColor},
