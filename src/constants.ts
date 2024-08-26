@@ -62,6 +62,7 @@ export const AVAILABLE_COMMANDS = [
   "glow",
   "history",
   "flicker",
+  "projects",
 ];
 
 export const COMMAND_RESPONSES = {
@@ -70,6 +71,8 @@ export const COMMAND_RESPONSES = {
     "Hi! I’m a self-made front-end developer with a couple of years under my belt. I’ve been tinkering mainly with Next.js and TypeScript, while dabbling in all sorts of libraries. But hey, I’m always open to new technologies—I’ve got a real itch for learning the latest and greatest in the tech world. I’m a bit of a lone wolf when it comes to problem-solving, always up for a challenge that pushes my limits. But don’t get me wrong, I’m a friendly sort, and I get along just fine working in a team. My goal? To create top-notch experiences for both my colleagues and the folks who use my apps. When I’m not glued to a screen, you’ll find me brewing a perfect cup of tea or wandering through the woods, soaking in the sights and sounds of nature. At home, I’m knee-deep in all things tech—whether it’s fixing up old consoles, diving into video games, or just hacking away at a new project. If you’re curious to know more, don’t be shy! Drop me a line on LinkedIn or send over an email! Just type the contact command, and I’ll walk you through the rest.",
   contact:
     "You can reach me at stawicki.k02@gmail.com or groove with me on LinkedIn: www.linkedin.com/in/kacper-stawicki-0541512a9",
+  projects:
+    "This project is just the tip of the iceberg! You’ll find more of my work over on LinkedIn. For the full scoop, hit the contact command and I’ll fill you in.",
   easteregg:
     "Far out! You found the Easter Egg! Here's a secret: The best way to predict the future is to invent it, dig?",
   default: (cmd: string) => `Command not found: ${cmd}`,

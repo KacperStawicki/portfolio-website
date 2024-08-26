@@ -257,6 +257,8 @@ export default function Terminal() {
         return commandHistory.join("\n");
       case "easteregg":
         return COMMAND_RESPONSES.easteregg;
+      case "projects":
+        return COMMAND_RESPONSES.projects;
       default:
         return COMMAND_RESPONSES.default(cmd);
     }
